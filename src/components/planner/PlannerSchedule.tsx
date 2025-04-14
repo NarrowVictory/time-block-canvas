@@ -1,8 +1,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Check, Plus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Clock, Plus } from "lucide-react";
 
 type ScheduleItem = {
   id: string;
@@ -24,25 +23,33 @@ const TimeSlot = ({ time, onClick, hasItem, item }: TimeSlotProps) => {
   return (
     <div
       className={cn(
-        "p-2 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors min-h-[60px]",
-        hasItem && "bg-primary/10"
+        "p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors min-h-[80px] flex flex-col justify-between",
+        hasItem ? "bg-soft-purple/10" : "bg-white"
       )}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium">{time}</span>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-gray-600">{time}</span>
         {hasItem && (
-          <span className="text-xs bg-primary text-primary-foreground px-1 py-0.5 rounded">
+          <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full">
             {item?.duration}m
           </span>
         )}
       </div>
-      {hasItem && (
-        <div className="mt-1">
-          <div className="text-sm font-medium line-clamp-1">{item?.activity}</div>
+      {hasItem ? (
+        <div>
+          <div className="text-base font-semibold text-gray-800 line-clamp-2">
+            {item?.activity}
+          </div>
           {item?.notes && (
-            <div className="text-xs text-gray-500 line-clamp-2">{item.notes}</div>
+            <div className="text-sm text-gray-500 line-clamp-2 mt-1">
+              {item.notes}
+            </div>
           )}
+        </div>
+      ) : (
+        <div className="text-center text-gray-400 opacity-50">
+          <Plus className="mx-auto" />
         </div>
       )}
     </div>
@@ -62,8 +69,6 @@ const PlannerSchedule = ({
   onTimeSlotClick,
   scheduleItems,
 }: PlannerScheduleProps) => {
-  const { toast } = useToast();
-  
   // Generate time slots for each column
   const generateTimeSlots = (startHour: number, endHour: number) => {
     const slots = [];
@@ -88,91 +93,67 @@ const PlannerSchedule = ({
     );
   };
 
+  const renderColumn = (
+    title: string, 
+    timeRange: string, 
+    slots: string[], 
+    column: "morning" | "afternoon" | "evening" | "midnight",
+    bgColors: { from: string; to: string }
+  ) => (
+    <div className="border rounded-lg overflow-hidden shadow-sm">
+      <div 
+        className={`bg-gradient-to-r ${bgColors.from} ${bgColors.to} text-white font-bold p-4 text-center flex items-center justify-between`}
+      >
+        <span>{title}</span>
+        <span className="text-xs">{timeRange}</span>
+      </div>
+      <div className="h-[600px] overflow-y-auto bg-white">
+        {slots.map((time) => {
+          const item = getItemForTimeSlot(time, column);
+          return (
+            <TimeSlot
+              key={`${column}-${time}`}
+              time={time}
+              onClick={() => onTimeSlotClick(time, column, item)}
+              hasItem={!!item}
+              item={item}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-6">
-      {/* MORNING COLUMN */}
-      <div className="border rounded-md overflow-hidden shadow-sm">
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-300 text-white font-bold p-3 text-center">
-          Morning (06:00–11:45)
-        </div>
-        <div className="h-[500px] overflow-y-auto bg-white">
-          {morningSlots.map((time) => {
-            const item = getItemForTimeSlot(time, "morning");
-            return (
-              <TimeSlot
-                key={`morning-${time}`}
-                time={time}
-                onClick={() => onTimeSlotClick(time, "morning", item)}
-                hasItem={!!item}
-                item={item}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* AFTERNOON COLUMN */}
-      <div className="border rounded-md overflow-hidden shadow-sm">
-        <div className="bg-gradient-to-r from-blue-400 to-sky-300 text-white font-bold p-3 text-center">
-          Afternoon (12:00–17:45)
-        </div>
-        <div className="h-[500px] overflow-y-auto bg-white">
-          {afternoonSlots.map((time) => {
-            const item = getItemForTimeSlot(time, "afternoon");
-            return (
-              <TimeSlot
-                key={`afternoon-${time}`}
-                time={time}
-                onClick={() => onTimeSlotClick(time, "afternoon", item)}
-                hasItem={!!item}
-                item={item}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* EVENING COLUMN */}
-      <div className="border rounded-md overflow-hidden shadow-sm">
-        <div className="bg-gradient-to-r from-purple-400 to-indigo-300 text-white font-bold p-3 text-center">
-          Evening (18:00–23:45)
-        </div>
-        <div className="h-[500px] overflow-y-auto bg-white">
-          {eveningSlots.map((time) => {
-            const item = getItemForTimeSlot(time, "evening");
-            return (
-              <TimeSlot
-                key={`evening-${time}`}
-                time={time}
-                onClick={() => onTimeSlotClick(time, "evening", item)}
-                hasItem={!!item}
-                item={item}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* MIDNIGHT COLUMN */}
-      <div className="border rounded-md overflow-hidden shadow-sm">
-        <div className="bg-gradient-to-r from-gray-700 to-gray-600 text-white font-bold p-3 text-center">
-          Midnight (00:00–05:45)
-        </div>
-        <div className="h-[500px] overflow-y-auto bg-white">
-          {midnightSlots.map((time) => {
-            const item = getItemForTimeSlot(time, "midnight");
-            return (
-              <TimeSlot
-                key={`midnight-${time}`}
-                time={time}
-                onClick={() => onTimeSlotClick(time, "midnight", item)}
-                hasItem={!!item}
-                item={item}
-              />
-            );
-          })}
-        </div>
-      </div>
+      {renderColumn(
+        "Morning", 
+        "(06:00–11:45)", 
+        morningSlots, 
+        "morning", 
+        { from: "from-yellow-400", to: "to-orange-300" }
+      )}
+      {renderColumn(
+        "Afternoon", 
+        "(12:00–17:45)", 
+        afternoonSlots, 
+        "afternoon", 
+        { from: "from-blue-400", to: "to-sky-300" }
+      )}
+      {renderColumn(
+        "Evening", 
+        "(18:00–23:45)", 
+        eveningSlots, 
+        "evening", 
+        { from: "from-purple-400", to: "to-indigo-300" }
+      )}
+      {renderColumn(
+        "Midnight", 
+        "(00:00–05:45)", 
+        midnightSlots, 
+        "midnight", 
+        { from: "from-gray-700", to: "to-gray-600" }
+      )}
     </div>
   );
 };
