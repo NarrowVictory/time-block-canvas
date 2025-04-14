@@ -154,38 +154,37 @@ const Planner = () => {
         Daily Planner
       </h1>
       
-      <div className="flex flex-col md:flex-row gap-6 items-start mb-8 bg-gray-50 p-4 rounded-lg shadow-sm">
-        <div className="w-full md:w-auto">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={(date) => date && setSelectedDate(date)}
-            className="rounded-md border shadow bg-white"
-          />
-        </div>
-        <div className="flex-1">
-          <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-primary" />
-            Rencana untuk {format(selectedDate, "EEEE, d MMMM yyyy")}
-          </h2>
-          <p className="text-muted-foreground mb-4">
-            Jadwalkan aktivitas Anda untuk hari ini dengan menambahkannya ke daftar to-do dan menempatkannya di jadwal.
-          </p>
-          
-          <div className="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-md">
-            <div className="flex gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-800">
-                Klik pada slot waktu di jadwal untuk menambah atau mengedit aktivitas. Data akan disimpan secara otomatis.
-              </p>
+      {/* ROW 1: Calendar (left), Planning (right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        {/* Calendar - Left Side */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="bg-white rounded-lg shadow-md p-6 border">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5 text-primary" />
+              {format(selectedDate, "EEEE, d MMMM yyyy")}
+            </h2>
+            <div className="flex justify-center">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                className="rounded-md border shadow bg-white"
+              />
+            </div>
+            <div className="mt-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-md">
+              <div className="flex gap-2">
+                <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-amber-800">
+                  Klik pada slot waktu di jadwal untuk menambah atau mengedit aktivitas. Data akan disimpan secara otomatis.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* PLANNING SECTION (30%) */}
-        <div className="lg:col-span-4 space-y-6">
+        
+        {/* Planning - Right Side */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Planning Form */}
           <div className="bg-white rounded-lg shadow-md p-6 border">
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
               <LayoutList className="h-6 w-6 text-primary" />
@@ -239,6 +238,7 @@ const Planner = () => {
             </form>
           </div>
           
+          {/* Activity List */}
           <div className="bg-white rounded-lg shadow-md p-6 border">
             <h3 className="text-xl font-semibold mb-3">Daftar Aktivitas</h3>
             {todos.length > 0 ? (
@@ -295,20 +295,20 @@ const Planner = () => {
             )}
           </div>
         </div>
-        
-        {/* SCHEDULE SECTION (70%) */}
-        <div className="lg:col-span-8">
-          <div className="bg-white rounded-lg shadow-md p-6 border">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <Clock className="h-6 w-6 text-primary" />
-              SCHEDULE
-            </h2>
-            
-            <PlannerSchedule 
-              onTimeSlotClick={handleScheduleItemClick}
-              scheduleItems={scheduleItems}
-            />
-          </div>
+      </div>
+      
+      {/* ROW 2: Schedule (full width) */}
+      <div className="mt-8">
+        <div className="bg-white rounded-lg shadow-md p-6 border">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Clock className="h-6 w-6 text-primary" />
+            SCHEDULE
+          </h2>
+          
+          <PlannerSchedule 
+            onTimeSlotClick={handleScheduleItemClick}
+            scheduleItems={scheduleItems}
+          />
         </div>
       </div>
       

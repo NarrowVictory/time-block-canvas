@@ -23,12 +23,12 @@ const TimeSlot = ({ time, onClick, hasItem, item }: TimeSlotProps) => {
   return (
     <div
       className={cn(
-        "p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors min-h-[80px] flex flex-col justify-between",
+        "p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors min-h-[100px] flex flex-col justify-between",
         hasItem ? "bg-soft-purple/10" : "bg-white"
       )}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-medium text-gray-600">{time}</span>
         {hasItem && (
           <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full">
@@ -37,7 +37,7 @@ const TimeSlot = ({ time, onClick, hasItem, item }: TimeSlotProps) => {
         )}
       </div>
       {hasItem ? (
-        <div>
+        <div className="p-2 rounded-lg bg-white shadow-sm border border-gray-100">
           <div className="text-base font-semibold text-gray-800 line-clamp-2">
             {item?.activity}
           </div>
@@ -48,8 +48,9 @@ const TimeSlot = ({ time, onClick, hasItem, item }: TimeSlotProps) => {
           )}
         </div>
       ) : (
-        <div className="text-center text-gray-400 opacity-50">
+        <div className="text-center text-gray-400 opacity-50 mt-3">
           <Plus className="mx-auto" />
+          <span className="text-xs block mt-1">Tambah</span>
         </div>
       )}
     </div>
@@ -102,12 +103,12 @@ const PlannerSchedule = ({
   ) => (
     <div className="border rounded-lg overflow-hidden shadow-sm">
       <div 
-        className={`bg-gradient-to-r ${bgColors.from} ${bgColors.to} text-white font-bold p-4 text-center flex items-center justify-between`}
+        className={`bg-gradient-to-r ${bgColors.from} ${bgColors.to} text-white font-bold p-5 text-center flex items-center justify-between`}
       >
-        <span>{title}</span>
-        <span className="text-xs">{timeRange}</span>
+        <span className="text-lg">{title}</span>
+        <span className="text-xs bg-white/20 px-2 py-1 rounded-full">{timeRange}</span>
       </div>
-      <div className="h-[600px] overflow-y-auto bg-white">
+      <div className="h-[650px] overflow-y-auto bg-white">
         {slots.map((time) => {
           const item = getItemForTimeSlot(time, column);
           return (
@@ -125,7 +126,7 @@ const PlannerSchedule = ({
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-6">
       {renderColumn(
         "Morning", 
         "(06:00–11:45)", 
